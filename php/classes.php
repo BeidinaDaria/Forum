@@ -273,7 +273,7 @@ class admin{
         $res=$group->fetch();
         return $res;
     }
-    function addSport($log,$p,$n,$b,$in=0,$c='',$s='',$ec='',$em='',$g){
+    function addSport($log,$p,$n,$b,$in=0,$c='',$s='',$ec='',$em='',$g,$id){
         $login=trim($log);
         $pass=trim($p);
         $name=trim($n);
@@ -305,7 +305,7 @@ class admin{
         $query=$acc->prepare("INSERT INTO `sport`(`id`, `login`, `password`, `name`, `date of birth`, `individual number`,
         `class`, `sport category`, `expire date of category`, `expire date of med`, `groupid`, `image`) VALUES ('?','?',
         '?','?','?','?','?','?','?','?','?','?')");
-        $query->execute(array($login,$pass,$name,$b,$indnum,$class,$sportcat,$ec,$em,$res));
+        $query->execute(array($id,$login,$pass,$name,$b,$indnum,$class,$sportcat,$ec,$em,$res,''));
         if ($query->errorCode()){
             return false;
         }
@@ -316,9 +316,45 @@ class admin{
         $query=$acc->prepare("SELECT * FROM sport;");
         $query->execute();
         $res=$query->fetch();
-        $names=array();
-        foreach ($res as $key=>$row)
-            $names[$key]=$row['name'];
-        array_multisort($names,SORT_ASC,$res);
+        if ($res){
+            $names=array();
+            foreach ($res as $key=>$row)
+                $names[$key]=$row['name'];
+            array_multisort($names,SORT_ASC,$res);
+            return $res;
+        }
+        else return false;
+    }
+
+    function changeSport($id,$log,$p,$n,$b,$in=0,$c='',$s='',$ec='',$em='',$g){
+        $login=trim($log);
+        $pass=trim($p);
+        $name=trim($n);
+        $indnum=trim($in);
+        $class=trim($c);
+        $sportcat=trim($s);
+        $g=trim($g);
+        if (strlen($name)<3 || strlen($login)<3 ||strlen($pass)<5 ||strlen($indnum)<5 || strlen($class)>3)
+        {
+            echo "<h3 style='color:red;'>Ввод некорректной длины!<h3/>";
+            return false;
+        }
+        $acc=Tools::connect();
+        $query=$acc->prepare("SELECT groupid FROM groups WHERE groupdesc=?");
+        $query->execute(array($g));
+        $res=$query->fetch();
+        $query=$acc->prepare("UPDATE `sport` SET(`id`, `login`, `password`, `name`, `date of birth`, `individual number`,
+        `class`, `sport category`, `expire date of category`, `expire date of med`, `groupid`) VALUES ('?','?',
+        '?','?','?','?','?','?','?','?','?')");
+        $query->execute(array($id,$login,$pass,$name,$b,$indnum,$class,$sportcat,$ec,$em,$res));
+        if ($query->errorCode()){
+            return false;
+        }
+        return true;
+    }
+    function deleteSport($id){
+        $acc=Tools::connect();
+        $query=$acc->prepare("DELETE FROM sport WHERE id=?");
+        $query->execute(array($id));
     }
 }
