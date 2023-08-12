@@ -302,6 +302,7 @@ class admin{
         $query=$acc->prepare("SELECT groupid FROM groups WHERE groupdesc=?");
         $query->execute(array($g));
         $res=$query->fetch();
+        $pass=md5($pass);
         $query=$acc->prepare("INSERT INTO `sport`(`id`, `login`, `password`, `name`, `date of birth`, `individual number`,
         `class`, `sport category`, `expire date of category`, `expire date of med`, `groupid`, `image`) VALUES ('?','?',
         '?','?','?','?','?','?','?','?','?','?')");
@@ -343,6 +344,7 @@ class admin{
         $query=$acc->prepare("SELECT groupid FROM groups WHERE groupdesc=?");
         $query->execute(array($g));
         $res=$query->fetch();
+        $pass=md5($pass);
         $query=$acc->prepare("UPDATE `sport` SET(`id`, `login`, `password`, `name`, `date of birth`, `individual number`,
         `class`, `sport category`, `expire date of category`, `expire date of med`, `groupid`) VALUES ('?','?',
         '?','?','?','?','?','?','?','?','?')");
@@ -355,6 +357,100 @@ class admin{
     function deleteSport($id){
         $acc=Tools::connect();
         $query=$acc->prepare("DELETE FROM sport WHERE id=?");
+        $query->execute(array($id));
+    }
+    function addCoach($log,$p,$n,$id,$atgr=array(),$atsp=array()){
+        $login=trim($log);
+        $pass=trim($p);
+        $name=trim($n);
+        if ($name=="" || $pass=="" ||$login=="")
+        {
+            echo "<h3 style='color:red;'>Заполните все поля!<h3/>";
+            return false;
+        }
+        if (strlen($name)<3 || strlen($login)<3 ||strlen($pass)<5)
+        {
+            echo "<h3 style='color:red;'>Ввод некорректной длины!<h3/>";
+            return false;
+        }
+        $acc=Tools::connect();
+        $query=$acc->prepare("SELECT login FROM users;");
+        $query->execute();
+        $res=$query->fetch();
+        if (array_search($login,$res)){
+            echo "<h3 style='color:red;'>Этот логин уже использован!<h3/>";
+            return false;
+        }
+        $attgr='';
+        foreach ($atgr as $ag){
+            $query=$acc->prepare("SELECT groupid FROM groups WHERE groupdesc=?");
+            $query->execute(array($ag));
+            $attgr.=$query.' ';
+        }
+        $attsp='';
+        foreach ($atsp as $as){
+            $query=$acc->prepare("SELECT id FROM sport WHERE name=?");
+            $query->execute(array($as));
+            $attsp.=$query.' ';
+        }
+        $pass=md5($pass);
+        $query=$acc->prepare("INSERT INTO `users`(`id`, `login`, `password`,`name`, `attached groups`, `attached sportsmen`)
+        VALUES ('?','?','?','?','?')");
+        $query->execute(array($id,$login,$pass,$name,$attgr,$attsp));
+        if ($query->errorCode()){
+            return false;
+        }
+        return true;
+    }
+    function showAllCoaches(){
+        $acc=Tools::connect();
+        $query=$acc->prepare("SELECT * FROM users WHERE roleid=?");
+        $query->execute(array(0));
+        $res=$query->fetch();
+        if ($res){
+            $names=array();
+            foreach ($res as $key=>$row)
+                $names[$key]=$row['name'];
+            array_multisort($names,SORT_ASC,$res);
+            return $res;
+        }
+        else return false;
+    }
+
+    function changeCoach($id,$log,$p,$n,$atgr=array(),$atsp=array()){
+        $login=trim($log);
+        $pass=trim($p);
+        $name=trim($n);
+        if (strlen($name)<3 || strlen($login)<3 ||strlen($pass)<5)
+        {
+            echo "<h3 style='color:red;'>Ввод некорректной длины!<h3/>";
+            return false;
+        }
+        $acc=Tools::connect();
+        $attgr='';
+        foreach ($atgr as $ag){
+            $query=$acc->prepare("SELECT groupid FROM groups WHERE groupdesc=?");
+            $query->execute(array($ag));
+            $attgr.=$query.' ';
+        }
+        $attsp='';
+        foreach ($atsp as $as){
+            $query=$acc->prepare("SELECT id FROM sport WHERE name=?");
+            $query->execute(array($as));
+            $attsp.=$query.' ';
+        }
+        $pass=md5($pass);
+        $query=$acc->prepare("UPDATE `users` SET(`id`, `login`, `password`, `name`,`attached groups`, `attached sportsmen`)
+        VALUES ('?','?','?','?','?','?')");
+        $query->execute(array($id,$login,$pass,$name,$attgr,$attsp));
+        if ($query->errorCode()){
+            return false;
+        }
+        return true;
+    }
+    function deleteCoach($id){
+        $acc=Tools::connect();
+        $query=$acc->prepare("DELETE FROM users WHERE id=?");
         $query->execute(array($id));
     }
 }
