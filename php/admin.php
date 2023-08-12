@@ -170,7 +170,7 @@ if ($f){?>
                             $_POST['groupid']);
                         }
                         if (isset($_POST['deletesport'])){
-                            $result=$f->deleteSport($sports[$ind]->id);
+                            $f->deleteSport($sports[$ind]->id);
                         }?>
                     </section>
                 <?php }?>
