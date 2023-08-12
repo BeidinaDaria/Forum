@@ -37,5 +37,5 @@ if(!isset($_POST['logbtn'])&& !isset($_POST['adbtn']))
         if (isset($_POST['adbtn'])){
             include_once('adminLogin.php');
         }
-    }
-?>
+    }?>
+
