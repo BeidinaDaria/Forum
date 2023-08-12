@@ -280,6 +280,32 @@ if ($f){?>
                 <?php }?>
             </div>
         </div>
+        <div class="news">
+            <form method="post" enctype="multipart/form-data" >
+                <div class="form">
+                    <div>
+                        <label for="title"><p>Заголовок: </p></label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div>
+                        <label for="text"><p>Текст: </p></label>
+                        <textarea class="form-control" name="text">
+                    </div>
+                    <div>
+                        <label for="main"><p>Сделать главной: </p></label>
+                        <input type="checkbox" class="form-control" name="main">
+                    </div>
+                </div>
+                <input type="submit" name="addarticle" id="addcoach" value="Добавить новость">
+                </form>
+            </div>
+            <?php if (isset($_POST['addarticle'])){
+                $main=0;
+                if (isset($_POST['main']))
+                    $main=1;
+                $result=$f->addArticle($_POST['title'],$_POST['text'],$main);
+            }?>
+        </div>
         <script>
             function showArticle(str) {
                 let navig = document.getElementById(str);
