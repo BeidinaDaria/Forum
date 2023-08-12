@@ -453,4 +453,30 @@ class admin{
         $query=$acc->prepare("DELETE FROM users WHERE id=?");
         $query->execute(array($id));
     }
+    function addArticle($title,$main,$text='',){
+        $title=trim($title);
+        $text=trim($text);
+        if ($title=="")
+        {
+            echo "<h3 style='color:red;'>Заполните заголовок!<h3/>";
+            return false;
+        }
+        $acc=Tools::connect();
+        if ($main){
+            $query=$acc->prepare("SELECT id FROM articles WHERE main=1;");
+            $query->execute();
+            $res=$query->fetch();
+            if ($query){
+                $query=$acc->prepare("UPDATE `articles` SET `main`='0' WHERE id=?");
+                $query->execute(array($res));
+            }
+        }
+        $query=$acc->prepare("INSERT INTO `articles`( `title`, `text`,`date of publish`, `main`)
+        VALUES ('?','?','?','?','?)");
+        $query->execute(array($title,$text,date('Y-M-D'),$main));
+        if ($query->errorCode()){
+            return false;
+        }
+        return true;
+    }
 }
