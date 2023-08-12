@@ -103,7 +103,7 @@ if ($f){?>
                         </div>
                         <button class="nav_adaptiv" onclick="showArticle('changeSport')"><p>Изменить спортсмена</p></button>
                         <div class="hide-news" id="changeSport">
-                            <form method="post" enctype="multipart/form-data" >
+                            <form method="post" id="<?php echo $sport[$ind]->id ?>"enctype="multipart/form-data" >
                                 <div class="form">
                                     <div>
                                         <label for="login"><p>Логин: </p></label>
@@ -161,7 +161,7 @@ if ($f){?>
                                     </div>
                                 </div>
                                 <input type="submit" name="changesport" id="<?php echo $sports[$ind]->id ?>" value="Изменить спортсмена">
-                                <input type="submit" name="deletesport" id="<?php echo $sports[$ind]->id ?>" value="Изменить спортсмена">
+                                <input type="submit" name="deletesport" id="<?php echo $sports[$ind]->id ?>" value="Удалить спортсмена">
                             </form>
                         </div>
                         <?php if (isset($_POST['changesport'])){
@@ -171,6 +171,110 @@ if ($f){?>
                         }
                         if (isset($_POST['deletesport'])){
                             $f->deleteSport($sports[$ind]->id);
+                        }?>
+                    </section>
+                <?php }?>
+            </div>
+        </div>
+        <h3>Управление тренерами</h3>
+        <div class="news">
+            <button class="nav_adaptiv" onclick="showArticle('addCoach')"><p>Добавить тренера</p></button>
+            <div class="hide-news" id="addCoach">
+                <form method="post" enctype="multipart/form-data" >
+                    <div class="form">
+                        <div>
+                            <label for="login"><p>Логин: </p></label>
+                            <input type="text" class="form-control" name="login" required>
+                        </div>
+                        <div>
+                            <label for="pass"><p>Пароль: </p></label>
+                            <input type="password" class="form-control" name="pass" required>
+                        </div>
+                        <div>
+                            <label for="name"><p>ФИО: </p></label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div>
+                            <label for="groupid"><p>Группы: </p></label>
+                            <?php $gr=$f->getGroups();
+                            for($ind=0;$ind<count($gr);$ind++)
+                                echo "<input type='checkbox' name='options[]' value='".$gr[$ind]."'>";
+                             ?>
+                        </div>
+                        <div>
+                            <label for="groupid"><p>Спортсмены: </p></label>
+                            <?php $sp=$f->showAll();
+                            for($ind=0;$ind<count($sp);$ind++)
+                                echo "<input type='checkbox' name='opt[]' value='".$sp[$ind]->name."'>";
+                             ?>
+                        </div>
+                    </div>
+                    <input type="submit" name="addcoach" id="addcoach" value="Добавить тренера">
+                </form>
+            </div>
+            <?php if (isset($_POST['addcoach'])){
+                $checkedgr = $_POST['options'];
+                $checkedsp = $_POST['opt'];
+                $result=$f->addCoach(count($f->showAllCoaches())+1,$_POST['login'],$_POST['pass'],$_POST['name'],$checkedgr,
+                $checkedsp);
+            }?>
+            <button class="nav_adaptiv" onclick="showArticle('changeCoaches')"><p>Изменить тренеров</p></button>
+            <div class="hide-news" id="changeCoaches">
+                <?php $coaches=$f->showAllCoaches();
+                for($ind=0;$ind<count($coaches);$ind++){ ?>
+                    <section>
+                        <div>
+                            <h3>ФИО: </h3>
+                        </div>
+                        <div>
+                            <h3><?php echo $coaches[$ind]->name;?></h3>
+                        </div>
+                        <button class="nav_adaptiv" onclick="showArticle('changeCoach')"><p>Изменить тренера</p></button>
+                        <div class="hide-news" id="changeSport">
+                            <form id="<?php echo $users[$ind]->id ?>" method="post" enctype="multipart/form-data" >
+                                <div class="form">
+                                    <div>
+                                        <label for="login"><p>Логин: </p></label>
+                                        <input type="text" class="form-control" name="login"
+                                            value="<?php echo $sports[$ind]->login ?>" required>
+                                    </div>
+                                    <div>
+                                        <label for="pass"><p>Пароль: </p></label>
+                                        <input type="password" class="form-control" name="pass"
+                                            value="<?php echo $sports[$ind]->password ?>" required>
+                                    </div>
+                                    <div>
+                                        <label for="name"><p>ФИО: </p></label>
+                                        <input type="text" class="form-control" name="name"
+                                            value="<?php echo $sports[$ind]->name ?>" required>
+                                    </div>
+                                    <div>
+                                        <label for="groupid"><p>Группы: </p></label>
+                                        <?php $gr=$f->getGroups();
+                                        for($ind=0;$ind<count($gr);$ind++)
+                                            echo "<input type='checkbox' name='options[]' value='".$gr[$ind]."'>";
+                                        ?>
+                                    </div>
+                                    <div>
+                                        <label for="groupid"><p>Спортсмены: </p></label>
+                                        <?php $sp=$f->showAll();
+                                        for($ind=0;$ind<count($sp);$ind++)
+                                            echo "<input type='checkbox' name='opt[]' value='".$sp[$ind]->name."'>";
+                                        ?>
+                                    </div>
+                                </div>
+                                <input type="submit" name="changecoach" value="Изменить тренера">
+                                <input type="submit" name="deletecoach" value="Удалить тренера">
+                            </form>
+                        </div>
+                        <?php if (isset($_POST['changecoach'])){
+                            $checkedgr = $_POST['options'];
+                            $checkedsp = $_POST['opt'];
+                            $result=$f->changeCoach($users[$ind]->id,$_POST['login'],$_POST['pass'],$_POST['name'],
+                           $checkedgr,$checkedsp);
+                        }
+                        if (isset($_POST['deletecoach'])){
+                            $f->deleteCoach($users[$ind]->id);
                         }?>
                     </section>
                 <?php }?>
