@@ -20,6 +20,7 @@ if(!isset($_POST['logbtn'])&& !isset($_POST['adbtn']))
         </div>
     </div>
     <input type="submit" class="btn btn-primary" name="logbtn" value="Вход">
+    <input type="submit" class="btn btn-primary" name="adbtn" value="Вход для тренеров и администраторов">
 </form>
 </main>
     <?php
